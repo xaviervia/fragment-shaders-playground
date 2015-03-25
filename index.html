@@ -1,0 +1,45 @@
+<!doctype html><html><head><script src="glsl-canvas.js"></script><script src="main.js"></script><link rel="stylesheet" href="style.css" /></head><body><canvas data-fragment="
+
+
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+vec2 normalizedCoordinates() {
+  return gl_FragCoord.xy / u_resolution;
+}
+
+float red() {
+  return normalizedCoordinates().y;
+}
+
+float green() {
+  return 0.6;
+}
+
+float blue() {
+  return 1.0;
+}
+
+float alpha() {
+  return 1.0;
+}
+
+void main() {
+	gl_FragColor = vec4(
+        red(),
+        green(),
+        blue(),
+        alpha()
+    );
+}
+
+
+
+
+"></canvas></body></html>
