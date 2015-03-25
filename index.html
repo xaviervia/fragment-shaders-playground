@@ -6,30 +6,58 @@
 precision mediump float;
 #endif
 
-uniform vec2 u_resolution;
-uniform vec2 u_mouse;
-uniform float u_time;
 
+
+// ===============================================================
+// UNIFORMS
+// ===============================================================
+uniform vec2 resolution;
+uniform vec2 mouse;
+uniform float time;
+
+
+
+// ===============================================================
+// HELPERS
+// ===============================================================
 vec2 normalizedCoordinates() {
-  return gl_FragCoord.xy / u_resolution;
+  return gl_FragCoord.xy / resolution;
 }
 
-float red() {
-  return normalizedCoordinates().y;
+
+vec2 normalizedMouse() {
+  return mouse / resolution;
 }
+
+
+
+// ===============================================================
+// DIMENSIONS
+// ===============================================================
+float red() {
+  return normalizedMouse().y;
+}
+
 
 float green() {
-  return 0.6;
+  return normalizedMouse().x;
 }
 
+
 float blue() {
-  return 1.0;
+  return 0.0;
 }
+
 
 float alpha() {
   return 1.0;
 }
 
+
+
+// ===============================================================
+// MAIN
+// ===============================================================
 void main() {
 	gl_FragColor = vec4(
         red(),

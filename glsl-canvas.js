@@ -72,21 +72,15 @@ function loadShaders() {
 
 		if( list[i].hasAttribute("data-fragment") ){
 			shaderSrc.fragSTR = list[i].getAttribute('data-fragment');
-		} else if( list[i].hasAttribute("data-fragment-url") ){
-			shaderSrc.fragURL = list[i].getAttribute('data-fragment-url');
 		} else {
 			continue;
 		}
 
 		var canvas = list[i];
-		var gl;
+		console.log("Creating WebGL context");
+		var gl = setupWebGL(list[i]);
 
-		if( !billboards[i] || !billboards[i].gl){
-			console.log("Creating WebGL context");
-			gl = setupWebGL(list[i]);
-		} else {
-			gl = billboards[i].gl
-		}
+
 
 		var program = loadShader(gl, shaderSrc);
 
@@ -328,23 +322,6 @@ function createProgram(gl, shaders, opt_attribs, opt_locations) {
 };
 
 /*
- *	Fetch for files
- */
-function fetchHTTP(url, methood){
-	var request = new XMLHttpRequest(), response;
-
-	request.onreadystatechange = function () {
-		if (request.readyState === 4 && request.status === 200) {
-			response = request.responseText;
-		}
-	}
-	request.open(methood ? methood : 'GET', url, false);
-	request.overrideMimeType("text/plain");
-	request.send();
-	return response;
-}
-
-/*
  *	Create a Vertex of a specific type (gl.VERTEX_SHADER/)
  */
 function createShader(_gl, _source, _type) {
@@ -370,12 +347,7 @@ function createShader(_gl, _source, _type) {
  */
 function loadShader( _gl, _shaderSrc ) {
 
-	var vertString = "";
-
-	if(_shaderSrc.vertURL){
-		vertString = fetchHTTP( _shaderSrc.vertURL );
-	} else {
-		vertString = "precision mediump float;\n\
+	var vertString = "precision mediump float;\n\
 uniform vec2 u_resolution;\n\
 uniform float u_time;\n\
 attribute vec2 a_position;\n\
@@ -385,23 +357,8 @@ void main() {\n\
    gl_Position = vec4(a_position, 0.0, 1.0);\n\
    v_texcoord = a_texcoord;\n\
 }";
-	}
 
-	var fragString = "";
-
-	if (_shaderSrc.fragSTR){
-		fragString += _shaderSrc.fragSTR;
-	} else if(_shaderSrc.fragURL){
-		fragString += fetchHTTP( _shaderSrc.fragURL );
-	} else {
-		fragString += "uniform vec2 u_resolution;\n\
-uniform float u_time;\n\
-varying vec2 v_texcoord;\n\
-void main(){\n\
-	vec2 st = gl_FragCoord.xy/u_resolution;\n\
-	gl_FragColor = vec4(st.x,st.y,abs(sin(u_time)),1.0);\n\
-}";
-	}
+	var fragString = _shaderSrc.fragSTR;
 
 	var vertexShader = createShader(_gl, vertString, _gl.VERTEX_SHADER);
 	var fragmentShader = createShader(_gl, fragString , _gl.FRAGMENT_SHADER);
@@ -444,7 +401,7 @@ function renderShader( _billboard ) {
 	// set the time uniform
 	var timeFrame = Date.now();
 	var time = (timeFrame-timeLoad) / 1000.0;
-	var timeLocation = _billboard.gl.getUniformLocation(_billboard.program, "u_time");
+	var timeLocation = _billboard.gl.getUniformLocation(_billboard.program, "time");
 	_billboard.gl.uniform1f(timeLocation, time);
 
 	// set the mouse uniform
@@ -454,12 +411,12 @@ function renderShader( _billboard ) {
 		mouse.y >= rect.top &&
 		mouse.y <= rect.bottom){
 
-		var mouseLocation = _billboard.gl.getUniformLocation(_billboard.program, "u_mouse");
+		var mouseLocation = _billboard.gl.getUniformLocation(_billboard.program, "mouse");
 		_billboard.gl.uniform2f(mouseLocation,mouse.x-rect.left,_billboard.canvas.height-(mouse.y-rect.top));
 	}
 
 	// set the resolution uniform
-	var resolutionLocation = _billboard.gl.getUniformLocation(_billboard.program, "u_resolution");
+	var resolutionLocation = _billboard.gl.getUniformLocation(_billboard.program, "resolution");
 	_billboard.gl.uniform2f(resolutionLocation, _billboard.canvas.width, _billboard.canvas.height);
 
 	for (var i = 0; i < _billboard.textures.length; ++i){
