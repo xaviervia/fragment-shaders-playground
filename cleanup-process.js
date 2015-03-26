@@ -6,79 +6,43 @@ const VERTICES = [-1.0, -1.0, 1.0, -1.0, -1.0,  1.0, -1.0,  1.0, 1.0, -1.0, 1.0,
 class CleanupProcess {
 
   constructor(canvas, code, vertexCode) {
-    this.canvas = canvas;
-    this.code = code;
-    this.vertexCode = vertexCode
-    this.text = this.code
-    this.vbo = []
-    this.gl = this.setupWebGL()
+    this.canvas = canvas
+
+    try { this.gl = this.canvas.getContext("webgl") }
+    catch (e) { this.gl = this.canvas.getContext("experimental-webgl") }
+
     this.timeLoad = Date.now()
     this.program = this.gl.createProgram()
 
     console.log("Creating WebGL context");
-    this.loadShader();
+    new Shader(
+      this.gl,
+      vertexCode,
+      this.gl.VERTEX_SHADER,
+      this.program
+    )
+
+    new Shader(
+      this.gl,
+      code,
+      this.gl.FRAGMENT_SHADER,
+      this.program
+    )
+
+    // Create and use program
+    this.gl.linkProgram(this.program)
+    this.gl.useProgram(this.program)
 
     console.log("Creating Vbo");
-
-    this.addSomething("a_texcoord", UVS)
-    this.addSomething("a_position", VERTICES)
+    new VertexBufferObject(this.gl, 'a_texcoord', UVS, this.program)
+    new VertexBufferObject(this.gl, 'a_position', VERTICES, this.program)
 
     this.renderShaders()
   }
 
-  addSomething(what, data) {
-    let location = this.gl.getAttribLocation(this.program, what)
-    let buffer = this.gl.createBuffer()
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer)
-    this.gl.bufferData( this.gl.ARRAY_BUFFER, new Float32Array(data), this.gl.STATIC_DRAW)
-    this.gl.enableVertexAttribArray( location )
-    this.gl.vertexAttribPointer( location, 2, this.gl.FLOAT, false, 0, 0)
-    this.vbo.push(buffer)
-  }
-
-  loadShader() {
-    this.gl.attachShader(
-      this.program,
-      this.createShader(
-        this.vertexCode,
-        this.gl.VERTEX_SHADER
-      )
-    )
-
-    this.gl.attachShader(
-      this.program,
-      this.createShader(
-        this.text,
-        this.gl.FRAGMENT_SHADER
-      )
-    )
-
-  	// Create and use program
-    this.gl.linkProgram(this.program)
-
-    // Check the link status
-    this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS)
-    this.gl.useProgram(this.program)
-  }
-
-  createShader(_source, _type) {
-    var shader = this.gl.createShader( _type );
-  	this.gl.shaderSource(shader, _source);
-  	this.gl.compileShader(shader);
-
-  	var compiled = this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS);
-
-  	if (!compiled) {
-  		// Something went wrong during compilation; get the error
-  		lastError = this.gl.getShaderInfoLog(shader);
-  		console.error("*** Error compiling shader '" + shader + "':" + lastError);
-  		this.gl.deleteShader(shader);
-  		return null;
-  	}
-
-  	return shader;
-  }
-
+  // ========================================================================
+  // NOT USED FOR NOW
+  // ========================================================================
   loadTexture(_texture) {
   	this.gl.bindTexture(this.gl.TEXTURE_2D, _texture);
   	this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -95,15 +59,6 @@ class CleanupProcess {
   	this.gl.bindTexture(this.gl.TEXTURE_2D, null);
   }
 
-  setupWebGL() {
-    try {
-      return this.canvas.getContext("webgl");
-    }
-
-    catch (e) {
-      return this.canvas.getContext("experimental-webgl");
-    }
-  }
 
   renderShaders() {
   	this.renderShader()
