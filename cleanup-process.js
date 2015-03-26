@@ -3,16 +3,25 @@
 const UVS = [0.0,  0.0, 1.0,  0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0,  1.0]
 const VERTICES = [-1.0, -1.0, 1.0, -1.0, -1.0,  1.0, -1.0,  1.0, 1.0, -1.0, 1.0,  1.0]
 
+var mouse = {x: 0, y: 0}
+
 class CleanupProcess {
 
-  constructor(canvas, code, vertexCode) {
+  constructor(canvas, output, code, vertexCode) {
     this.canvas = canvas
+    this.output = output
 
     try { this.gl = this.canvas.getContext("webgl") }
     catch (e) { this.gl = this.canvas.getContext("experimental-webgl") }
 
     this.timeLoad = Date.now()
     this.program = this.gl.createProgram()
+
+    this.canvas.addEventListener('mousemove', function(e){
+        mouse.x = e.clientX
+        mouse.y = e.clientY
+        output.mouse.textContent = `${mouse.x} x ${mouse.y}`
+    }, false)
 
     console.log("Creating WebGL context");
     new Shader(
@@ -37,7 +46,7 @@ class CleanupProcess {
     new VertexBufferObject(this.gl, 'a_texcoord', UVS, this.program)
     new VertexBufferObject(this.gl, 'a_position', VERTICES, this.program)
 
-    this.renderShaders()
+    this.loop()
   }
 
   // ========================================================================
@@ -60,35 +69,34 @@ class CleanupProcess {
   }
 
 
-  renderShaders() {
-  	this.renderShader()
+  loop() {
+  	this.render()
     var that = this
   	window.requestAnimFrame(function () {
-      that.renderShaders()
+      that.loop()
     })
   }
 
-  renderShader() {
+  render() {
   	// set the time uniform
   	var timeFrame = Date.now();
   	var time = (timeFrame-this.timeLoad) / 1000.0;
   	var timeLocation = this.gl.getUniformLocation(this.program, "time");
   	this.gl.uniform1f(timeLocation, time);
 
-  	// set the mouse uniform
-  	var rect = this.canvas.getBoundingClientRect();
-  	if( mouse.x >= rect.left &&
-  		mouse.x <= rect.right &&
-  		mouse.y >= rect.top &&
-  		mouse.y <= rect.bottom){
+    this.output.time.textContent = time
 
-  		var mouseLocation = this.gl.getUniformLocation(this.program, "mouse");
-  		this.gl.uniform2f(mouseLocation,mouse.x-rect.left,this.canvas.height-(mouse.y-rect.top));
-  	}
+  	// set the mouse uniform
+		var mouseLocation = this.gl.getUniformLocation(this.program, "mouse");
+		this.gl.uniform2f(mouseLocation,mouse.x,mouse.y);
 
   	// set the resolution uniform
   	var resolutionLocation = this.gl.getUniformLocation(this.program, "resolution");
-  	this.gl.uniform2f(resolutionLocation, this.canvas.width, this.canvas.height);
+  	this.gl.uniform2f(resolutionLocation,
+      this.canvas.clientWidth, this.canvas.clientHeight);
+
+  	this.output.resolution.textContent =
+      `${this.canvas.clientWidth} x ${this.canvas.clientHeight}`
 
   	// for (var i = 0; i < this.textures.length; ++i){
   	//
