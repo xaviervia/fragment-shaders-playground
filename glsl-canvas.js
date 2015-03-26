@@ -23,10 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 'use strict'
 
-var timeLoad = Date.now();
 var mouse = {x: 0, y: 0};
-var billboards = [];
-var clean = undefined
 
 document.addEventListener('mousemove', function(e){
     mouse.x = e.clientX || e.pageX;

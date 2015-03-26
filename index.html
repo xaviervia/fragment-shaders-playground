@@ -1,5 +1,5 @@
 <!doctype html><html><head><script src="cleanup-process.js"></script><script src="glsl-canvas.js"></script><script src="main.js"></script><link rel="stylesheet" href="style.css" /></head><body><canvas></canvas>
-<script type="text/glsl">
+<script id="fragment" type="text/glsl">
 
 
 
@@ -68,5 +68,20 @@ void main() {
     );
 }
 
+</script>
+
+
+<script id="vertex" type="text/glsl">
+precision mediump float;
+uniform vec2 u_resolution;
+uniform float u_time;
+attribute vec2 a_position;
+attribute vec2 a_texcoord;
+varying vec2 v_texcoord;
+
+void main() {
+ gl_Position = vec4(a_position, 0.0, 1.0);
+ v_texcoord = a_texcoord;
+}
 </script>
 </body></html>

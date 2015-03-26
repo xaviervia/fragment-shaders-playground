@@ -1,4 +1,9 @@
+'use strict'
+
 window.onload = function(){
-	var clean = new CleanupProcess
-	clean.renderShaders();
-};
+	new CleanupProcess(
+		document.querySelector("canvas"),
+		document.querySelector('#fragment').textContent,
+		document.querySelector('#vertex').textContent
+	)
+}
