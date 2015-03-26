@@ -1,8 +1,18 @@
-var CleanupProcess = function (canvas, text) {
-  this.canvas = canvas
-  this.text = text
+var CleanupProcess = function () {
+  this.canvas = document.querySelector("canvas");
+  this.code = document.querySelector('[type="text/glsl"]').textContent;
+  this.text = this.code
   this.vbo = []
   this.gl = this.setupWebGL()
+
+  console.log("Creating WebGL context");
+  this.loadShader();
+
+  console.log("Creating Vbo");
+
+  this.loadUVS()
+  this.defineVertex()
+
 }
 
 CleanupProcess.prototype.loadUVS = function () {
@@ -137,4 +147,51 @@ CleanupProcess.prototype.setupWebGL = function () {
   catch (e) {
     return this.canvas.getContext("experimental-webgl");
   }
-};
+}
+
+
+CleanupProcess.prototype.renderShaders = function () {
+	this.renderShader()
+  var that = this
+	window.requestAnimFrame(function () {
+    that.renderShaders()
+  })
+}
+
+CleanupProcess.prototype.renderShader = function () {
+	// set the time uniform
+	var timeFrame = Date.now();
+	var time = (timeFrame-timeLoad) / 1000.0;
+	var timeLocation = this.gl.getUniformLocation(this.program, "time");
+	this.gl.uniform1f(timeLocation, time);
+
+	// set the mouse uniform
+	var rect = this.canvas.getBoundingClientRect();
+	if( mouse.x >= rect.left &&
+		mouse.x <= rect.right &&
+		mouse.y >= rect.top &&
+		mouse.y <= rect.bottom){
+
+		var mouseLocation = this.gl.getUniformLocation(this.program, "mouse");
+		this.gl.uniform2f(mouseLocation,mouse.x-rect.left,this.canvas.height-(mouse.y-rect.top));
+	}
+
+	// set the resolution uniform
+	var resolutionLocation = this.gl.getUniformLocation(this.program, "resolution");
+	this.gl.uniform2f(resolutionLocation, this.canvas.width, this.canvas.height);
+
+	// for (var i = 0; i < this.textures.length; ++i){
+	//
+	// 	this.gl.uniform1i( this.gl.getUniformLocation( this.program, "u_tex"+i), i);
+	// 	this.gl.uniform2f( this.gl.getUniformLocation( this.program, "u_tex"+i+"Resolution"),
+	// 							 this.textures[i].image.width,
+	// 							 this.textures[i].image.height);
+	//
+	// 	this.gl.activeTexture(this.gl.TEXTURE0+i);
+	// 	this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures[i]);
+	//
+	// }
+
+	// Draw the rectangle.
+	this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+}

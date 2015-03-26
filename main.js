@@ -1,4 +1,4 @@
 window.onload = function(){
-	loadShaders();
-	renderShaders();
+	var clean = new CleanupProcess
+	clean.renderShaders();
 };
