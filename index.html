@@ -2,8 +2,9 @@
 
   <script src="shader.js"></script>
   <script src="vertex-buffer-object.js"></script>
-  <script src="cleanup-process.js"></script>
-  <script src="glsl-canvas.js"></script>
+  <script src="uniform.js"></script>
+  <script src="logger.js"></script>
+  <script src="program.js"></script>
   <script src="main.js"></script>
 
 <link rel="stylesheet" href="style.css" /></head><body>
@@ -50,12 +51,18 @@ vec2 normalizedMouse() {
 // DIMENSIONS
 // ===============================================================
 float red() {
-  return normalizedMouse().y;
+  return abs(sin(time));
 }
 
 
 float green() {
-  return normalizedMouse().x;
+  if (gl_FragCoord.y > resolution.y / 2.0) {
+    return 0.0;
+  }
+
+  else {
+    return 1.0;
+  }
 }
 
 
@@ -94,8 +101,8 @@ attribute vec2 a_texcoord;
 varying vec2 v_texcoord;
 
 void main() {
- gl_Position = vec4(a_position, 0.0, 1.0);
- v_texcoord = a_texcoord;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+  v_texcoord = a_texcoord;
 }
 </script>
 </body></html>
