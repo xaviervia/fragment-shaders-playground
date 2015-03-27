@@ -13,7 +13,9 @@
     <span id="output.mouse" class="output__mouse"></span>
     <span id="output.time" class="output__time"></span>
   </output>
-  <canvas id="canvas" class="canvas"></canvas>
+
+  <canvas id="canvas" class="canvas" width="1000px" height="800px"></canvas>
+
 <script id="fragment" type="text/glsl">
 
 
@@ -51,18 +53,18 @@ vec2 normalizedMouse() {
 // DIMENSIONS
 // ===============================================================
 float red() {
-  return abs(sin(time));
+  if (gl_FragCoord.y < mouse.y + 0.5) {
+    return 1.0;
+  }
+
+  else {
+    return 0.0;
+  }
 }
 
 
 float green() {
-  if (gl_FragCoord.y > resolution.y / 2.0) {
-    return 0.0;
-  }
-
-  else {
-    return 1.0;
-  }
+  return abs(sin(time));
 }
 
 

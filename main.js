@@ -1,15 +1,16 @@
 'use strict'
 
 let App 		= undefined
+let canvas 	= undefined
 
 window.addEventListener('DOMContentLoaded', function() {
 	let start 	= Date.now()
 	let mouse 	= {x: 0, y: 0}
-	let canvas = document.querySelector('#canvas')
+	canvas = document.querySelector('#canvas')
 
 	canvas.addEventListener('mousemove', function (e) {
-		mouse.x = e.clientX
-		mouse.y = e.clientY
+		mouse.x = e.offsetX
+		mouse.y = e.offsetY
 	})
 
 	App = new Program(
@@ -27,7 +28,7 @@ window.addEventListener('DOMContentLoaded', function() {
 	})
 
 	.addUniform('mouse', 2, function () {
-		return [mouse.x, mouse.y]
+		return [parseFloat(mouse.x), parseFloat(canvas.clientHeight - mouse.y)]
 	})
 
 	.start()
