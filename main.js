@@ -2,11 +2,10 @@
 
 let listeners = {
 	resize: function () {
-		console.log(window.innerWidth)
-		this.canvas.style.width = window.innerWidth + "px"
-		this.canvas.style.height = window.innerHeight + "px"
-		this.canvas.width = window.innerWidth * 2
-		this.canvas.height = window.innerHeight * 2
+		this.canvas.style.width 	= window.innerWidth + "px"
+		this.canvas.style.height 	= window.innerHeight + "px"
+		this.canvas.width 				= window.innerWidth * 2
+		this.canvas.height 				= window.innerHeight * 2
 	},
 
 	mousemove: function (event) {
