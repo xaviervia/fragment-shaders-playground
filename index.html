@@ -14,7 +14,7 @@
     <span id="output.time" class="output__time"></span>
   </output>
 
-  <canvas id="canvas" class="canvas" width="1000px" height="800px"></canvas>
+  <canvas id="canvas" class="canvas" width="500px" height="500px"></canvas>
 
 <script id="fragment" type="text/glsl">
 
@@ -38,8 +38,13 @@ uniform float time;
 // ===============================================================
 // HELPERS
 // ===============================================================
-vec2 normalizedCoordinates() {
-  return gl_FragCoord.xy / resolution;
+vec4 self() {
+  return gl_FragCoord;
+}
+
+
+vec2 normalizedSelf() {
+  return self().xy / resolution;
 }
 
 
@@ -48,12 +53,25 @@ vec2 normalizedMouse() {
 }
 
 
+float sinusoidal(float displacement, float multiplier) {
+  return floor(
+    (
+      sin((normalizedSelf().x + displacement)  * multiplier)
+      * resolution.y / 7.0
+    )
+    + resolution.y / 2.0
+  );
+}
+
 
 // ===============================================================
 // DIMENSIONS
 // ===============================================================
 float red() {
-  if (gl_FragCoord.y < mouse.y + 0.5) {
+  if (
+      self().y == sinusoidal(time, normalizedMouse().x * 100.0) - 0.5 ||
+      self().y == sinusoidal(time, normalizedMouse().x * 100.0) + 0.5
+    ) {
     return 1.0;
   }
 
@@ -64,7 +82,7 @@ float red() {
 
 
 float green() {
-  return abs(sin(time));
+  return 0.0;
 }
 
 
