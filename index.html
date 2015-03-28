@@ -14,7 +14,7 @@
     <span id="output.time" class="output__time"></span>
   </output>
 
-  <canvas id="canvas" class="canvas" width="500px" height="500px"></canvas>
+  <canvas id="canvas" class="canvas" width="1000px" height="1000px"></canvas>
 
 <script id="fragment" type="text/glsl">
 
@@ -42,14 +42,13 @@ vec4 self() {
   return gl_FragCoord;
 }
 
-
 vec2 normalizedSelf() {
   return self().xy / resolution;
 }
 
 
 vec2 normalizedMouse() {
-  return mouse / resolution;
+  return mouse * 2.0 / resolution;
 }
 
 

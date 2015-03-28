@@ -24,7 +24,7 @@ window.addEventListener('DOMContentLoaded', function() {
 	})
 
 	.addUniform('resolution', 2, function () {
-		return [canvas.clientWidth, canvas.clientHeight]
+		return [canvas.clientWidth * 2, canvas.clientHeight * 2]
 	})
 
 	.addUniform('mouse', 2, function () {
