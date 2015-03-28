@@ -9,8 +9,8 @@ let listeners = {
 	},
 
 	mousemove: function (event) {
-		this.mouse.x = event.offsetX
-		this.mouse.y = event.offsetY
+		this.cursor.x = event.offsetX
+		this.cursor.y = event.offsetY
 	}
 }
 
