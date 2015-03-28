@@ -16,7 +16,7 @@
 
   <canvas id="canvas" class="canvas" width="1000px" height="1000px"></canvas>
 
-<script id="fragment" type="text/glsl">
+<script id="script.fragment" type="text/glsl">
 
 
 
@@ -68,8 +68,8 @@ float sinusoidal(float displacement, float multiplier) {
 // ===============================================================
 float red() {
   if (
-      self().y == sinusoidal(time, normalizedMouse().x * 100.0) - 0.5 ||
-      self().y == sinusoidal(time, normalizedMouse().x * 100.0) + 0.5
+      self().y == sinusoidal(radians(time), normalizedMouse().x * 100.0) - 0.5 ||
+      self().y == sinusoidal(radians(time), normalizedMouse().x * 100.0) + 0.5
     ) {
     return 1.0;
   }
@@ -111,7 +111,7 @@ void main() {
 </script>
 
 
-<script id="vertex" type="text/glsl">
+<script id="script.vertex" type="text/glsl">
 precision mediump float;
 uniform vec2 u_resolution;
 uniform float u_time;
