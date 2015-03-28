@@ -1,13 +1,18 @@
 <!doctype html><html><head>
 
-  <script src="shader.js"></script>
-  <script src="vertex-buffer-object.js"></script>
-  <script src="uniform.js"></script>
-  <script src="logger.js"></script>
-  <script src="program.js"></script>
-  <script src="main.js"></script>
+  <script src="js/vendor/audiolet.js"></script>
+  <script src="js/player.js"></script>
 
-<link rel="stylesheet" href="style.css" /></head><body>
+  <script src="js/shader.js"></script>
+  <script src="js/vertex-buffer-object.js"></script>
+  <script src="js/uniform.js"></script>
+  <script src="js/logger.js"></script>
+  <script src="js/program.js"></script>
+  <script src="js/main.js"></script>
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
   <output class="output">
     <span id="output.resolution" class="output__resolution"></span>
     <span id="output.mouse" class="output__mouse"></span>
@@ -16,7 +21,7 @@
 
   <canvas id="canvas" class="canvas" width="1000px" height="1000px"></canvas>
 
-<script id="script.fragment" type="text/glsl">
+  <script id="script.fragment" type="text/glsl">
 
 
 
@@ -131,10 +136,10 @@ void main() {
     );
 }
 
-</script>
+  </script>
 
 
-<script id="script.vertex" type="text/glsl">
+  <script id="script.vertex" type="text/glsl">
 precision mediump float;
 uniform vec2 u_resolution;
 uniform float u_time;
@@ -146,5 +151,5 @@ void main() {
   gl_Position = vec4(a_position, 0.0, 1.0);
   v_texcoord = a_texcoord;
 }
-</script>
+  </script>
 </body></html>

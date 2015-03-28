@@ -16,7 +16,7 @@ let listeners = {
 
 class App {
 	constructor() {
-		this.mouse = { x: 100, y: 100 }
+		this.cursor = { x: 100, y: 100 }
 		this.start = Date.now()
 		this.canvas = document.querySelector('[id="canvas"]')
 
@@ -25,35 +25,48 @@ class App {
 
 		listeners.resize.call(this)
 
+		this.player = new Player(this)
+		this.player.addTone(330, Math.sin)
+		this.player.addTone(220, Math.cos)
+
 		this.program = new Program(
 			this.canvas.getContext("webgl"),
 			document.querySelector('[id="script.fragment"]').textContent,
 			document.querySelector('[id="script.vertex"').textContent
 		)
 
-		.addUniform('time', 1, function () {
-			return (Date.now() - this.start) / 1000.0
-		}.bind(this))
+		this.addUniforms()
 
-		.addUniform('resolution', 2, function () {
-			return [
-				this.canvas.clientWidth * 2,
-				this.canvas.clientHeight * 2
-			]
-		}.bind(this))
+		this.program.start()
+	}
 
-		.addUniform('mouse', 2, function () {
-			return [
-				parseFloat(this.mouse.x),
-				parseFloat(this.canvas.clientHeight - this.mouse.y)
-			]
-		}.bind(this))
+	addUniforms() {
+		this.program
+			.addUniform('time', 1, this.time.bind(this))
 
-		.start()
+			.addUniform('resolution', 2, this.resolution.bind(this))
+
+			.addUniform('mouse', 2, this.mouse.bind(this))
+	}
+
+	time() { return (Date.now() - this.start) / 1000.0 }
+
+	resolution() {
+		return [
+			this.canvas.clientWidth * 2,
+			this.canvas.clientHeight * 2
+		]
+	}
+
+	mouse() {
+		return [
+			parseFloat(this.cursor.x),
+			parseFloat(this.canvas.clientHeight - this.cursor.y)
+		]
 	}
 }
 
 
 window.addEventListener('DOMContentLoaded', function() {
-	new App
+	window.app = new App
 })
