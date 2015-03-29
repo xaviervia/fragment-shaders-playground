@@ -63,25 +63,11 @@ vec2 normalizedMouse() {
 }
 
 
-float sinusoidal(float displacement, float multiplier) {
-  return floor(
-    (
-      sin((normalizedSelf().x + displacement)  * multiplier)
-      * resolution.y / 7.0
-    )
-    + resolution.y / 2.0
-  );
-}
-
-bool insideTheCircle(vec2 position, float radius) {
-  return pow(position.y, 2.0) + pow(position.x, 2.0) < pow(radius, 2.0);
-}
-
 // ===============================================================
 // DIMENSIONS
 // ===============================================================
 float red() {
-  return step(0.0, middleSelf().x);
+  return smoothstep(mouse.x * 2.0 + 50.0, mouse.x * 2.0 - 50.0, self().x);
 }
 
 
