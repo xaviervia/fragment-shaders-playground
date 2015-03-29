@@ -3,48 +3,62 @@
 class Player {
   constructor(app) {
     this.app = app
-    this.audiolet = new Audiolet
-    this.synth = new Synth(this)
+    this.context = new AudioContext
   }
 
-  addTone(frequency, gain) {
-    this.synth.addTone(frequency, gain)
-    this.synth.connect(this.audiolet.output)
+  addTone(updateFunction) {
+    var tone = new Tone(this, updateFunction)
+
+    tone.connect(this.context.destination)
+
+    this.tones = this.tones || []
+    this.tones.push(tone)
+  }
+
+  start() {
+    this.tones.forEach(function (tone) { tone.start() })
+    this.loop()
+
+    return this
+  }
+
+  loop() {
+  	this.tones.forEach(function (tone) { tone.update() })
+
+  	window.requestAnimationFrame(this.loop.bind(this))
   }
 }
 
-class Synth extends AudioletGroup {
-  constructor(player) {
-    super(player.audiolet, 0, 1)
-
+class Tone {
+  constructor(player, updateFunction) {
     this.player = player
-    this.audiolet = player.audiolet
+    this.app = player.app
+    this.context = this.player.context
+    this.updateFunction = updateFunction
+
+    this.oscillator = this.context.createOscillator()
+    this.gain = this.context.createGain()
+
+    this.oscillator.type = 'sine'
+    this.oscillator.frequency.value = 0
+
+    this.oscillator.connect(this.gain)
   }
 
-  addTone(frequency, gain) {
-    this.sine = new Sine(this.audiolet, frequency)
-    // this.tones = this.tones || []
-    // this.tones.push( sine )
-    // this.modulator = new Saw(this.audiolet, frequency * 2)
-    // this.modulatorMulAdd = new MulAdd(this.audiolet, 200, 440)
-    // this.modulator.connect(this.modulatorMulAdd)
-    // this.modulatorMulAdd.connect(sine)
+  start() {
+    this.oscillator.start()
+  }
 
-    this.gain = new Gain(this.audiolet)
-    this.gain.value.getValue = function () {
-      return gain(this.player.app.time())
-    }.bind(this)
-    //
-    // this.envelope = new PercussiveEnvelope(
-    //   this.audiolet, 1, 4.5, 4.5,
-    //   function () {
-    //     this.audiolet.scheduler.addRelative(
-    //       0, this.remove.bind(this) )
-    //   }.bind(this)
-    // )
+  update() {
+    this.gain.gain.value = Math.abs(
+      this.updateFunction(this.app.time())
+    )
+    this.oscillator.frequency.value = Math.abs(
+      this.updateFunction(this.app.time())
+    ) * 1000
+  }
 
-    // this.envelope.connect(this.gain, 0, 1)
-    this.sine.connect(this.gain)
-    this.gain.connect(this.outputs[0])
+  connect(destination) {
+    this.gain.connect(destination)
   }
 }

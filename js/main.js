@@ -26,8 +26,10 @@ class App {
 		listeners.resize.call(this)
 
 		this.player = new Player(this)
-		this.player.addTone(330, Math.sin)
-		this.player.addTone(220, Math.cos)
+		this.player.addTone(Math.sin)
+		this.player.addTone(Math.cos)
+		this.player.start()
+		// this.player.addTone(220, Math.cos)
 
 		this.program = new Program(
 			this.canvas.getContext("webgl"),
