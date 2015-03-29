@@ -77,43 +77,21 @@ bool insideTheCircle(vec2 position, float radius) {
   return pow(position.y, 2.0) + pow(position.x, 2.0) < pow(radius, 2.0);
 }
 
-
 // ===============================================================
 // DIMENSIONS
 // ===============================================================
 float red() {
-  if (
-      self().y > sinusoidal(time / 4.0, normalizedMouse().x * 100.0) - 3.5 &&
-      self().y < sinusoidal(time / 4.0, normalizedMouse().x * 100.0) + 3.5
-    ) {
-    return 0.0;
-  }
-
-  else {
-    return 0.8;
-  }
+  return step(0.0, middleSelf().x);
 }
 
 
 float green() {
-  if (pow(middleSelf().y, 2.0) + pow(middleSelf().x, 2.0) < pow(resolution.x / 4.0 * (abs(sin(time))), 2.0)) {
-    return 1.0;
-  }
-
-  else {
-    return 0.0;
-  }
+  return 1.0;
 }
 
 
 float blue() {
-  if (pow(middleSelf().y, 2.0) + pow(middleSelf().x, 2.0) < pow(resolution.x / 4.0 * (abs(cos(time))), 2.0)) {
-    return 1.0;
-  }
-
-  else {
-    return 0.0;
-  }
+  return 1.0;
 }
 
 
