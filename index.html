@@ -31,7 +31,7 @@ precision mediump float;
 
 
 // ===============================================================
-// UNIFORMS
+//  UNIFORMS
 // ===============================================================
 uniform vec2 resolution;
 uniform vec2 mouse;
@@ -40,15 +40,13 @@ uniform float time;
 
 
 // ===============================================================
-// HELPERS
+//  NORMALIZERS
 // ===============================================================
-vec4 self() {
-  return gl_FragCoord;
-}
+vec4 self() { return gl_FragCoord; }
 
-vec2 normalizedSelf() {
-  return self().xy / resolution;
-}
+
+vec2 normalizedSelf() { return self().xy / resolution; }
+
 
 vec2 middleSelf() {
   return vec2(
@@ -58,31 +56,100 @@ vec2 middleSelf() {
 }
 
 
-vec2 normalizedMouse() {
-  return mouse * 2.0 / resolution;
+vec2 middleMouse() {
+  return vec2(
+    mouse.x - resolution.x / 2.0,
+    mouse.y - resolution.y / 2.0
+  );
 }
+
+
+vec2 normalizedMouse() { return mouse * 2.0 / resolution; }
+
 
 
 // ===============================================================
-// DIMENSIONS
+//  NOISE
 // ===============================================================
-float red() {
-  return smoothstep(mouse.x * 2.0 + 50.0, mouse.x * 2.0 - 50.0, self().x);
+float noise(vec2 co) {
+  return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
 
 
-float green() {
-  return 1.0;
+float noise(vec2 co, float seed) {
+  return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * seed);
 }
 
 
-float blue() {
-  return 1.0;
+float normalNoise(vec2 coordinates, float factor) {
+  float noise = noise(coordinates);
+  return ((noise - noise / 2.0) * 2.0) / factor;
 }
 
 
-float alpha() {
-  return 1.0;
+float normalNoise(vec2 coordinates, float factor, float seed) {
+  float noise = noise(coordinates, seed);
+  return ((noise - noise / 2.0) * 2.0) / factor;
+}
+
+
+
+// ===============================================================
+//  COLORS
+// ===============================================================
+vec3 background() {
+  return vec3(0.92, 0.9, 0.8) + normalNoise(middleSelf(), 6.0);
+}
+
+
+vec3 middleground() {
+  return vec3(0.6, 0.6, 0.6) + normalNoise(middleSelf(), 2.0, time);
+}
+
+
+vec3 foreground(float intensity) {
+  return vec3(1.0 - intensity) + normalNoise(middleSelf(), 6.0);
+}
+
+
+
+// ===============================================================
+//  DRAWERS
+// ===============================================================
+bool isForeground(vec3 tracing) {
+  for (float indexX = -1.0; indexX < 2.0; indexX += 1.0)
+    for (float indexY = -1.0; indexY < 2.0; indexY += 1.0)
+      if (middleSelf() + vec2(indexX, indexY) == tracing.xy)
+        return true;
+
+  return false;
+}
+
+
+bool isMiddleground(vec3 tracing) {
+  for (float indexX = -3.0; indexX < 4.0; indexX += 1.0)
+    for (float indexY = -3.0; indexY < 4.0; indexY += 1.0)
+      if (middleSelf().xy + vec2(indexX, indexY) == tracing.xy)
+        return true;
+
+  return false;
+}
+
+
+vec3 draw(vec3 tracing) {
+  if (isForeground(tracing))         return foreground(tracing.z);
+  else if (isMiddleground(tracing))  return middleground();
+
+  return background();
+}
+
+
+
+// ===============================================================
+// MAIN
+// ===============================================================
+vec3 point() {
+  return vec3(middleSelf().x, -middleSelf().x, 0.7);
 }
 
 
@@ -91,12 +158,7 @@ float alpha() {
 // MAIN
 // ===============================================================
 void main() {
-	gl_FragColor = vec4(
-        red(),
-        green(),
-        blue(),
-        alpha()
-    );
+	gl_FragColor = vec4( draw(point()), 1.0 );
 }
 
   </script>

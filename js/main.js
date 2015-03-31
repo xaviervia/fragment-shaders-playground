@@ -56,8 +56,8 @@ class App {
 
 	mouse() {
 		return [
-			parseFloat(this.cursor.x),
-			parseFloat(this.canvas.clientHeight - this.cursor.y)
+			parseFloat(this.cursor.x * 2),
+			parseFloat((this.canvas.clientHeight - this.cursor.y) * 2)
 		]
 	}
 }
