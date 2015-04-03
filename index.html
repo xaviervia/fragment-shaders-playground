@@ -69,6 +69,30 @@ vec2 normalizedMouse() { return mouse * 2.0 / resolution; }
 
 
 // ===============================================================
+//  DETECTION
+// ===============================================================
+bool left() {
+  return middleSelf().x <= 0.0;
+}
+
+
+bool right() {
+  return middleSelf().x > 0.0;
+}
+
+
+bool bottom() {
+  return middleSelf().y <= 0.0;
+}
+
+
+bool top() {
+  return middleSelf().y > 0.0;
+}
+
+
+
+// ===============================================================
 //  NOISE
 // ===============================================================
 float noise(vec2 co) {
@@ -152,13 +176,35 @@ vec3 point() {
   return vec3(middleSelf().x, -middleSelf().x, 0.7);
 }
 
+vec3 circle(float radius) {
+
+  float xSquared = pow(radius, 2.0) - pow(middleSelf().y, 2.0);
+  float ySquared = pow(radius, 2.0) - pow(middleSelf().x, 2.0);
+  float x = sqrt(xSquared);
+  float y = sqrt(ySquared);
+
+  if (left()) {
+    x = -x;
+  }
+
+  if (bottom()) {
+    y = -y;
+  }
+
+  return vec3(
+    floor(x) + 0.5,
+    floor(y) + 0.5,
+    0.8
+  );
+}
+
 
 
 // ===============================================================
 // MAIN
 // ===============================================================
 void main() {
-	gl_FragColor = vec4( draw(point()), 1.0 );
+	gl_FragColor = vec4( draw(circle(200.0)), 1.0 );
 }
 
   </script>
